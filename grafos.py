@@ -24,7 +24,7 @@ class Grafo:
       self.lista_adj[u].append((v, w))
       self.mat_adj[u][v] = w
     else:
-      print("Aresta invalida!")
+      print("Warning")
 
   def remove_aresta(self, u, v):
     """Remove aresta de u a v, se houver"""
