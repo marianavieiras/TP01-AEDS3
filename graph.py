@@ -1,7 +1,10 @@
-import openpyxl
+import csv
+import requests
+
 class Graph:
   #Construtor do grafo
   def __init__(self, num_vert = 0, lista_adj = None, mat_adj = None , arestas = None):
+    self.dadosvotacao = []
     self.num_vert = num_vert
     if lista_adj == None:
       self.lista_adj = [[]for _ in range(num_vert)]
@@ -35,39 +38,44 @@ class Graph:
         print("Aresta inexistente!")
     else:
       print("Aresta invalida!")
+
+  def buscaAresta(self,u,v):
+    return 0
+  def comparaVotos(self,analisando, analisado):
+    for voto in analisado:
+      if voto[1] == analisando[1]:
+        self.buscaArestaVotes()
+    return 0
  
-  #Ler um arquivo xlsx 
+  def agrupaVotos(self, linhas):
+    analisado = []
+    for i in range(linhas):
+      analisando = self.dadosvotacao[i]
+      while analisando[0] == self.dadosvotacao[i+1][0]:
+        analisado.append(analisando)
+        self.comparaVotos(analisando, analisado)
+        
+  #Ler um arquivo csv
   def ler_arquivo(self, nome_arq):
-      
     try:
-        workbook = openpyxl.load_workbook(r"C:\Users\Ronaldo\Documents\AEDS3\TP01\\"+nome_arq)
-        sheet = workbook.active
+      with open(nome_arq, 'r', encoding='utf-8') as arq:
+          informacoes = []
+          lines = sum(1 for _ in arq)# Quantidade de linhas do arquivo
+          arq.seek(0)  # Retorna ao início do arquivo
 
-        # Leitura do cabeçalho
-        coluna1 = sheet.cell(row=1, column=1).value
-        if self.num_vert > 1000:
-            self.repre = True
-
-        coluna2 = sheet.cell(row=1, column=2).value
-
-        # Inicializacao das estruturas de dados
-        self.lista_adj = [[] for _ in range(int(self.num_vert))]
-        self.mat_adj = [[0 for _ in range(self.num_vert)] for _ in range(self.num_vert)]
-
-        # Le cada aresta do arquivo
-        for i in range(2, cont_arestas + 2):
-            u = sheet.cell(row=i, column=1).value
-            v = sheet.cell(row=i, column=2).value
-            w = sheet.cell(row=i, column=3).value
-            self.add_aresta(u, v, w)
-
-            if w == 0:
-                self.pond = False
-
-            if w < 0:
-                self.negativo = True
+          for _ in range(lines):
+            linha = arq.readline()
+            linha = linha.strip().split(";")
+            idVotacao = linha[0]
+            voto = linha[3]
+            idDep = linha[4]
+            nomeDep = linha[6]
+            informacoes = (idVotacao, voto, idDep, nomeDep)
+            print("informacoes =", informacoes)
+            self.dadosvotacao.append(informacoes)
+      self.agrupaVotos(lines)  
+         
     except FileNotFoundError:
-        print("Nao foi possivel encontrar ou ler o arquivo!")
+      print("Não foi possível encontrar ou ler o arquivo!")
 
 
- 
