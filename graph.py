@@ -1,34 +1,31 @@
 import csv
 import requests
+import txt
 
 class Graph:
   #Construtor do grafo
-  def __init__(self, num_vert = 0, lista_adj = None, mat_adj = None , arestas = None):
+  def __init__(self, num_vert = 0, arestas = None):
     self.dadosvotacao = []
+    self.deputados = []
     self.num_vert = num_vert
-    if lista_adj == None:
-      self.lista_adj = [[]for _ in range(num_vert)]
-    else: 
-      self.lista_adj = lista_adj
     if arestas == None:
       self.arestas = [[]for _ in range(num_vert)]
     else:
       self.arestas = arestas
+
     
   #Adicionar aresta com valor 1 do vértice u ao vértice v
   def add_aresta(self, u, v, w = 1):
-    self.num_arestas += 1
     if u < self.num_vert and v < self.num_vert:
       self.arestas.append((u, v, w))
-      self.lista_adj[u].append((v, w)) 
+
     else:
       print("Aresta inválida!")
       
   #Remove uma aresta
   def remove_aresta(self, u, v):
     if u < self.num_vert and v < self.num_vert:
-      if self.mat_adj[u][v] != 0:
-        self.num_arestas += 1
+      if self.mat_adj[u][v] != 0:   
         self.mat_adj[u][v] = 0
         for (v2, w2) in self.lista_adj[u]:
           if v2 == v:
@@ -40,34 +37,46 @@ class Graph:
       print("Aresta invalida!")
 
   def buscaAresta(self,u,v):
-    for i in self.lista_adj:
-      print(i)
+    for i in range(len(self.arestas)):
+      aresta = self.arestas[i]
+      if aresta[0] == u and aresta[1] == v:
+        self.arestas[i][2]+1
+        return 1
     return 0
   
-  def comparaVotos(self,analisando, analisado):
-    for voto in analisado:
-      if voto[1] == analisando[1]:
-        print("voto"+voto[1]+ "analisado"+ analisando[1])
-        print("Nome 1"+voto[3]+ "nome 2"+ analisando[3])
-        #self.buscaAresta(voto[1],analisando[1])
-    return 0
- 
+ #Essa função agrupa os deputados que realizam o mesmo tipo de voto em uma mesma votação, 
+ # criando uma aresta e/ou aumentado o peso da aresta caso esses votos sejam iguais
   def agrupaVotos(self, linhas):
-    analisado = []
     for i in range(linhas):
       analisando = self.dadosvotacao[i]
       if(i+1 <= linhas): #evitando alcançar um indice que não existe
-        for j in range(i+1 , 60):
-          print("\n registro i", analisando[0])
-          print("\n registro j", self.dadosvotacao[j][0])
+        for j in range(i+1 , linhas):
           if(analisando[0] == self.dadosvotacao[j][0]):
-            print("igual")
+            if(analisando[1] == self.dadosvotacao[j][1]):
+              u = self.deputados.index(analisando[2])
+              v = self.deputados.index(self.dadosvotacao[j][2])
+              if(self.buscaAresta(u, v) == 0): 
+                self.add_aresta(u,v)
+
           else:
+            print("Arestas = ", self.arestas)
             continue
           #analisado.append(analisando)
           #print(analisado,"\n")
           #self.comparaVotos(analisando, analisado)
-        
+
+  #Como o meu numero de vertices é definido pela quantidade de deputados, 
+  # por meio desta função é possivel definir essa quantidade baseado no 
+  # tamanho do array deputados sendo seu indice nesse array o que define 
+  # o seu indice na lista de adijacencias
+  def calculaNumVert(self, lines):
+    for i in range(lines):
+      idDep = self.dadosvotacao[i][2]
+      if(idDep not in self.deputados):
+        self.deputados.append(idDep)
+
+    self.num_vert = len(self.deputados)    
+
   #Ler um arquivo csv
   def ler_arquivo(self, nome_arq):
     try:
@@ -86,9 +95,12 @@ class Graph:
             informacoes = (idVotacao, voto, idDep, nomeDep)
             #print(informacoes)
             self.dadosvotacao.append(informacoes)
+      self.calculaNumVert(lines)
       self.agrupaVotos(lines)  
          
     except FileNotFoundError:
       print("Não foi possível encontrar ou ler o arquivo!")
-
-
+  def gerar (self):
+    generator = txt('meu_arquivo.txt')
+    content = self.arestas
+    generator.write_content(content)
