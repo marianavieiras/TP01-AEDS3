@@ -40,20 +40,33 @@ class Graph:
       print("Aresta invalida!")
 
   def buscaAresta(self,u,v):
+    for i in self.lista_adj:
+      print(i)
     return 0
+  
   def comparaVotos(self,analisando, analisado):
     for voto in analisado:
       if voto[1] == analisando[1]:
-        self.buscaArestaVotes()
+        print("voto"+voto[1]+ "analisado"+ analisando[1])
+        print("Nome 1"+voto[3]+ "nome 2"+ analisando[3])
+        #self.buscaAresta(voto[1],analisando[1])
     return 0
  
   def agrupaVotos(self, linhas):
     analisado = []
     for i in range(linhas):
       analisando = self.dadosvotacao[i]
-      while analisando[0] == self.dadosvotacao[i+1][0]:
-        analisado.append(analisando)
-        self.comparaVotos(analisando, analisado)
+      if(i+1 <= linhas): #evitando alcançar um indice que não existe
+        for j in range(i+1 , 60):
+          print("\n registro i", analisando[0])
+          print("\n registro j", self.dadosvotacao[j][0])
+          if(analisando[0] == self.dadosvotacao[j][0]):
+            print("igual")
+          else:
+            continue
+          #analisado.append(analisando)
+          #print(analisado,"\n")
+          #self.comparaVotos(analisando, analisado)
         
   #Ler um arquivo csv
   def ler_arquivo(self, nome_arq):
@@ -71,7 +84,7 @@ class Graph:
             idDep = linha[4]
             nomeDep = linha[6]
             informacoes = (idVotacao, voto, idDep, nomeDep)
-            print("informacoes =", informacoes)
+            #print(informacoes)
             self.dadosvotacao.append(informacoes)
       self.agrupaVotos(lines)  
          
