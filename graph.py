@@ -18,7 +18,6 @@ class Graph:
   def add_aresta(self, u, v, w = 1):
     if u < self.num_vert and v < self.num_vert:
       self.arestas.append((u, v, w))
-
     else:
       print("Aresta inválida!")
       
@@ -39,8 +38,10 @@ class Graph:
   def buscaAresta(self,u,v):
     for i in range(len(self.arestas)):
       aresta = self.arestas[i]
+      print("",aresta[0])
       if aresta[0] == u and aresta[1] == v:
-        self.arestas[i][2]+1
+        print("\nRepetiu u =" ,u, "e V = ", v)
+        self.arestas[i][2]+=1
         return 1
     return 0
   
@@ -50,7 +51,7 @@ class Graph:
     for i in range(linhas):
       analisando = self.dadosvotacao[i]
       if(i+1 <= linhas): #evitando alcançar um indice que não existe
-        for j in range(i+1 , linhas):
+        for j in range(i+1 , 130):
           if(analisando[0] == self.dadosvotacao[j][0]):
             if(analisando[1] == self.dadosvotacao[j][1]):
               u = self.deputados.index(analisando[2])
